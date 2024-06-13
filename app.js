@@ -1,6 +1,10 @@
 const express = require("express");
+const FirebaseWrapper = require('./FirebaseWrapper');
 const app = express();
 const port = process.env.PORT || 3001;
+
+let firebaseWrapper = new FirebaseWrapper();
+firebaseWrapper.init();
 
 app.get("/step1", (req, res) =>{
     stepHandler(req, res);
@@ -8,6 +12,12 @@ app.get("/step1", (req, res) =>{
 app.get("/finish", (req, res) => {
     finishHandler(req,res);
 });
+
+app.get("/check", async (req, res) => {
+    let value = await firebaseWrapper.getId(req.query.id);
+    res.type('json').send(value);
+});
+
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 server.keepAliveTimeout = 120 * 1000;
@@ -72,6 +82,7 @@ let stepHandler = function(req, res){
 };
 
 let finishHandler = function(req,res){
+    let userId= req.query.id;
     const finalhtml = `
     <!DOCTYPE html>
     <html>
@@ -124,9 +135,10 @@ let finishHandler = function(req,res){
       </body>
     </html>
 `;
-
+    firebaseWrapper.storeId(userId);
     res.type('html').send(finalhtml)
 };
+
 
 
 
