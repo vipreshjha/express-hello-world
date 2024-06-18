@@ -1,10 +1,12 @@
 const express = require("express");
 const FirebaseWrapper = require('./FirebaseWrapper');
+// const FirebaseAuth = require('./FirebaseAuth');
 const app = express();
 const port = process.env.PORT || 3001;
 
 let firebaseWrapper = new FirebaseWrapper();
 firebaseWrapper.init();
+// let firebaseAuth = new FirebaseAuth();
 
 app.get("/step1", (req, res) =>{
     stepHandler(req, res);
@@ -13,10 +15,19 @@ app.get("/finish", (req, res) => {
     finishHandler(req,res);
 });
 
+app.get("/store", async (req, res) => {
+    let value = await firebaseWrapper.storeId(req.query.uuid, req.query.tid, req.query.utm_campaign);
+    res.send(value);
+});
 app.get("/check", async (req, res) => {
     let value = await firebaseWrapper.getId(req.query.id);
     res.type('json').send(value);
 });
+
+/*app.get("/authtoken", async (req, res) => {
+    let value = await firebaseAuth.getAuthToken();
+    res.send(value);
+});*/
 
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 

@@ -22,18 +22,25 @@ FirebaseWrapper.prototype.init = async function(){
     app = wrappedInitializeApp(firebaseConfig);
 };
 
-FirebaseWrapper.prototype.storeId = function(id) {
+FirebaseWrapper.prototype.storeId = async function(id, transactionId, campaignName) {
     const db = wrappedFirestore.getFirestore(app);
     const coll = wrappedFirestore.collection(db, "BSDKPremiumUsers");
     const document = wrappedFirestore.doc(coll, "Users-" + id);
     try {
-        const docRef = wrappedFirestore.setDoc(document , {
+        let data = {
             "UserId": id,
             "Timestamp": new Date().getTime()
-        }).then(console.log).catch(console.error);
+        };
+        if (transactionId) data["TransactionId"] = transactionId;
+        if (campaignName) data["CampaignName"] = campaignName;
+
+        const docRef = await wrappedFirestore.setDoc(document , data); //.then(console.log).catch(console.error);
+
     } catch(msg) {
         console.error("Error adding document: ", msg);
+        return "failure";
     };
+    return "success";
 };
 
 FirebaseWrapper.prototype.getId=async function (id) {
