@@ -17,6 +17,9 @@ app.get("/finish", (req, res) => {
 
 app.get("/store", async (req, res) => {
     let value = await firebaseWrapper.storeId(req.query.uuid, req.query.tid, req.query.utm_campaign);
+    res.header(`Access-Control-Allow-Origin`, `https://weatherforecastsdaily.com`);
+    res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
+    res.header(`Access-Control-Allow-Headers`, `Content-Type`);
     res.send(value);
 });
 app.get("/check", async (req, res) => {
